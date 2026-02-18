@@ -1,31 +1,41 @@
+from fastapi import status
+
 class AppException(Exception):
-    pass
+    status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR
+    detail: str = "Внутренняя ошибка сервера"
+
+    def __init__(self, detail: str = None):
+        if detail:
+            self.detail = detail
+        super().__init__(self.detail)
 
 class NotFoundException(AppException):
-    """Ресурс не найден"""
-    def __init__(self, message: str = "Resource not found"):
-        self.message = message
+    """404: Ресурс не найден"""
+    status_code = status.HTTP_404_NOT_FOUND
+    detail = "Ресурс не найден"
 
-class NotAuthenticatedException(AppException):
-    """Ошибка аутентификации"""
-    def __init__(self, message: str = "Not authenticated"):
-        self.message = message
-    pass
+class UnauthorizedException(AppException):
+    """401: Ошибка аутентификации (неверный пароль или токен)"""
+    status_code = status.HTTP_401_UNAUTHORIZED
+    detail = "Неверный email или пароль"
 
 class ForbiddenException(AppException):
-    """Ошибка авторизации"""
-    def __init__(self, message: str = "Forbidden resource"):
-        self.message = message
-    pass
+    """403: Ошибка авторизации (нет прав доступа)"""
+    status_code = status.HTTP_403_FORBIDDEN
+    detail = "Недостаточно прав для выполнения операции"
 
-class EmailAlreadyExistsException(AppException):
-    """Email уже есть в базе"""
-    def __init__(self, message: str = "Email already exists"):
-        self.message = message
-    pass
+class ConflictException(AppException):
+    """409: Конфликт данных"""
+    status_code = status.HTTP_409_CONFLICT
+    detail = "Ресурс уже существует"
 
-class DifferingPasswordsException(AppException):
-    """При регистрации не совпали пароли"""
-    def __init__(self, message: str = "Differing passwords"):
-        self.message = message
-    pass
+class BadRequestException(AppException):
+    """400: Некорректный запрос"""
+    status_code = status.HTTP_400_BAD_REQUEST
+    detail = "Ошибка в данных запроса"
+
+class EmailAlreadyExistsException(ConflictException):
+    detail = "Пользователь с таким email уже существует"
+
+class DifferingPasswordsException(BadRequestException):
+    detail = "Пароли не совпадают"

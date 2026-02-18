@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 
+from exceptions.exceptions import ForbiddenException, NotAuthenticatedException, NotFoundException, UnauthorizedException
 from repos.token_repo import ITokenRepository
 from repos.user_repo import IUserRepository
 from security import check_password, create_access_token, create_refresh_token, create_tokens
@@ -29,13 +30,13 @@ class AuthServiceImpl(IAuthService):
     async def login(self, email: str, password: str) -> dict:
         user = await self.user_repo.get_by_email(email)
         if not user:
-            raise Exception("User not found")
+            raise UnauthorizedException()
 
         if not check_password(hashed=user.password_hashed, plain=password):
-            raise Exception("Invalid password")
+            raise UnauthorizedException()
         
         if not user.is_active:
-            raise Exception("User is deactivated")
+            raise UnauthorizedException()
         
         access_token=create_access_token(user_id=user.id, email=user.email)
         refresh_token=create_refresh_token(user_id=user.id)
@@ -48,7 +49,7 @@ class AuthServiceImpl(IAuthService):
     async def refresh(self, old_refresh_token: str):
         db_token = await self.token_repo.get_refresh_token(token=old_refresh_token)
         if not db_token or db_token.expires_at < datetime.now():
-            raise Exception("Invalid refresh token")
+            raise UnauthorizedException()
         
         user = await self.user_repo.get_by_id(db_token.user_id)
 
