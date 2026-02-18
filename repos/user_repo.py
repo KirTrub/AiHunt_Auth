@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from dto.UserUpdate import UserUpdate
-from dto.UserCreate import UserCreate
 from models.user import User
 
 class IUserRepository(ABC):
@@ -16,7 +15,7 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    async def get_by_id(self, id: int) -> User:
+    async def get_by_id(self, user_id: int) -> User:
         pass
 
     @abstractmethod
@@ -24,15 +23,15 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    async def get_all(self, ) -> User:
+    async def get_all(self) -> List[User]:
         pass
     
     @abstractmethod
-    async def update(self, id: int, data: UserUpdate) -> User:
+    async def update(self, user_id: int, data: UserUpdate) -> User:
         pass
     
     @abstractmethod
-    async def delete_by_id(self, id: int) -> int:
+    async def soft_delete_by_id(self, user_id: int) -> int:
         pass
 
 class UserRepositoryImpl(IUserRepository):
@@ -55,8 +54,8 @@ class UserRepositoryImpl(IUserRepository):
         await self.db.refresh(user)
         return user.id
 
-    async def get_by_id(self, id: int) -> User:
-        result = await self.db.execute(select(User).where(User.id==id).where(User.is_active==True))
+    async def get_by_id(self, user_id: int) -> User:
+        result = await self.db.execute(select(User).where(User.id==user_id).where(User.is_active==True))
         user = result.scalar_one()
         if not user:
             return None
@@ -70,16 +69,13 @@ class UserRepositoryImpl(IUserRepository):
         return user
 
     async def get_all(self) -> List[User]:
-        result = await self.db.execute(select(User).where(User.is_active==True))
-        users = result.scalars().all()
-        if not users:
-            return []
-        
+        result = await self.db.execute(select(User))
+        users = list(result.scalars().all())
         return users
     
 
-    async def update(self, id: int, data: UserUpdate) -> User:
-        result = await self.db.execute(select(User).where(User.id==id))
+    async def update(self, user_id: int, data: UserUpdate) -> User:
+        result = await self.db.execute(select(User).where(User.id==user_id).where(User.is_active)==True)
         user = result.scalar_one_or_none()
         if not user:
             return None
@@ -93,8 +89,8 @@ class UserRepositoryImpl(IUserRepository):
         await self.db.refresh(user)
         return user
     
-    async def safe_delete_by_id(self, id: int) -> int:
-        result = await self.db.execute(select(User).where(User.id==id).where(User.is_active==True))
+    async def soft_delete_by_id(self, user_id: int) -> int:
+        result = await self.db.execute(select(User).where(User.id==user_id).where(User.is_active==True))
         user = result.scalar_one_or_none()
 
         if not user:
@@ -105,4 +101,4 @@ class UserRepositoryImpl(IUserRepository):
         await self.db.commit()
         await self.db.refresh(user)
         return user.id
-   
+

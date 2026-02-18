@@ -6,7 +6,6 @@ app = FastAPI()
 
 
 if __name__ == "__main__":
-    print(1)
     uvicorn.run(
         "main:app",
         host="127.0.0.1",

@@ -14,8 +14,3 @@ class RefreshToken(Base):
     expires_at: Mapped[datetime] = mapped_column(nullable=False)
     is_revoked: Mapped[bool] = mapped_column(default=False)
 
-class BlackListedToken(Base):
-    __tablename__ = "blacklisted_tokens"
-
-    jti: Mapped[str] = mapped_column(primary_key=True, index=True)
-    expires_at: Mapped[datetime] = mapped_column()
