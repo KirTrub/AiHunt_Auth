@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 
-from exceptions.exceptions import ForbiddenException, NotAuthenticatedException, NotFoundException, UnauthorizedException
+from exceptions.exceptions import UnauthorizedException
+from models.refresh_token import RefreshToken
 from repos.token_repo import ITokenRepository
 from repos.user_repo import IUserRepository
-from security import check_password, create_access_token, create_refresh_token, create_tokens
+from security import check_password, create_access_token, create_refresh_token
 
 class IAuthService(ABC):
     @abstractmethod
@@ -58,7 +59,7 @@ class AuthServiceImpl(IAuthService):
         return {"access_token": new_access_token}
     
 
-    async def logout(self, payload: dict, refresh_token):
+    async def logout(self, payload: dict, refresh_token: str):
         exp = datetime.fromtimestamp(payload["exp"])
         await self.token_repo.blacklist_access_token(payload["jti"], exp)
         await self.token_repo.delete_refresh_token(refresh_token)

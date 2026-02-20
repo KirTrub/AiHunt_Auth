@@ -6,10 +6,13 @@ from argon2.exceptions import VerifyMismatchError
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 
-load_dotenv()
-
 SECRET = os.getenv("SECRET_KEY")
-ALGORITHM = "HS256"
+ALGORITHM = os.getenv("ALGORITHM")
+
+if not SECRET:
+    raise RuntimeError("SECRET_KEY is not set in environment")
+
+
 ph = PasswordHasher()
 
 def create_access_token(user_id: int, email: str) -> str:
@@ -20,7 +23,7 @@ def create_access_token(user_id: int, email: str) -> str:
         "sub": str(user_id),
         "jti": access_jti,
         "iat": now,
-        "exp": now + timedelta(minutes=15),
+        "exp": now + timedelta(hours=3),
         "email": email,
         "type": "access"
     }
@@ -30,8 +33,8 @@ def create_access_token(user_id: int, email: str) -> str:
 def create_refresh_token(user_id: int) -> str:
     refresh_payload = {
         "sub": str(user_id),
-        "iat": datetime.now,
-        "exp": datetime.now + timedelta(days=7),
+        "iat": datetime.now(),
+        "exp": datetime.now() + timedelta(days=7),
         "type": "refresh"
     }
 

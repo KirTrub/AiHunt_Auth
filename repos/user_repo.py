@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from dto.UserUpdate import UserUpdate
+from dto.User import UserUpdate
 from models.user import User
 
 class IUserRepository(ABC):
@@ -56,16 +56,12 @@ class UserRepositoryImpl(IUserRepository):
 
     async def get_by_id(self, user_id: int) -> User:
         result = await self.db.execute(select(User).where(User.id==user_id).where(User.is_active==True))
-        user = result.scalar_one()
-        if not user:
-            return None
+        user = result.scalar_one_or_none()
         return user
     
     async def get_by_email(self, email: str) -> User:
         result = await self.db.execute(select(User).where(User.email==email).where(User.is_active==True))
-        user = result.scalar_one()
-        if not user:
-            return None
+        user = result.scalar_one_or_none()
         return user
 
     async def get_all(self) -> List[User]:
@@ -75,7 +71,7 @@ class UserRepositoryImpl(IUserRepository):
     
 
     async def update(self, user_id: int, data: UserUpdate) -> User:
-        result = await self.db.execute(select(User).where(User.id==user_id).where(User.is_active)==True)
+        result = await self.db.execute(select(User).where(User.id==user_id).where(User.is_active==True))
         user = result.scalar_one_or_none()
         if not user:
             return None
