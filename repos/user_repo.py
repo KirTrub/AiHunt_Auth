@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from dto.User import UserUpdate
+from dto.user import UserUpdate
 from models.user import User
 
 class IUserRepository(ABC):

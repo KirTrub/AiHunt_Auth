@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from models.article import Article
-from dto.Article import ArticleCreate, ArticleUpdate
+from dto.article import ArticleCreate, ArticleUpdate
 
 class IArticleRepository(ABC):
     @abstractmethod

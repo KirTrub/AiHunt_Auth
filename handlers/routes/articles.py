@@ -1,7 +1,7 @@
 import http
 from typing import List
 from fastapi import APIRouter, Depends
-from dto.Article import ArticleCreate, ArticleResponse, ArticleUpdate
+from dto.article import ArticleCreate, ArticleResponse, ArticleUpdate
 from exceptions.exceptions import NotFoundException
 from handlers.deps import Checker, get_article_service
 from models.article import Article

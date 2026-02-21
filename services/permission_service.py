@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List
 from exceptions.exceptions import NotFoundException
-from models.permissions import Permission
-from dto.Permission import PermissionCreate, PermissionUpdate
+from models.permission import Permission
+from dto.permission import PermissionCreate, PermissionUpdate
 from repos.permission_repo import IPermissionRepository
 
 class IPermissionService(ABC):

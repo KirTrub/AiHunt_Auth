@@ -104,12 +104,11 @@ class Checker:
         perm_service: IPermissionService = Depends(get_permission_service),
         db: AsyncSession = Depends(get_db)
     ):
-        res = await db.execute(select(User).where(User.id==int(payload["sub"])))
+        res = await db.execute(select(User).where(User.id == int(payload["sub"])))
         user = res.scalar_one_or_none()
 
         if not user or not user.is_active:
             raise NotFoundException()
-        
 
         permissions = await perm_service.get_by_role_id_and_resource_name(user.role_id, self.resource_name)
         if not permissions:
@@ -121,19 +120,21 @@ class Checker:
         if not getattr(permissions, f"{self.action}_perm", False):
             raise ForbiddenException()
 
-        path_id = request.path_params.get("user_id") or request.path_params.get("id")
-        
-        if path_id is None:
-            return user
+        target_id = None
+        for key, value in request.path_params.items():
+            if key == "id" or key.endswith("_id"):
+                try:
+                    target_id = int(value)
+                    break
+                except ValueError:
+                    continue
 
-        try:
-            target_id = int(path_id)
-        except ValueError:
-            raise ForbiddenException()
+        if target_id is None:
+            return user
 
         if self.resource_name == "user":
             if target_id != user.id:
-                raise ForbiddenException()
+                raise ForbiddenException("You can only modify your own profile")
         
         else:
             model = self._models_map.get(self.resource_name)
@@ -142,7 +143,11 @@ class Checker:
                 result = await db.execute(query)
                 obj = result.scalar_one_or_none()
                 
-                if not obj or getattr(obj, "owner_id", None) != user.id:
-                    raise ForbiddenException()
+                if not obj:
+                    raise NotFoundException(f"{self.resource_name} not found")
+                
+                actual_owner_id = getattr(obj, "owner_id", None)
+                if actual_owner_id != user.id:
+                    raise ForbiddenException(f"Not your {self.resource_name}")
 
         return user

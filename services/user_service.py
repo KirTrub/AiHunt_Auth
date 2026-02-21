@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from dto.User import UserCreate
-from dto.User import UserUpdate
+from dto.user import UserCreate
+from dto.user import UserUpdate
 from exceptions.exceptions import DifferingPasswordsException, EmailAlreadyExistsException, NotFoundException
 from models.user import User
 from repos.token_repo import ITokenRepository

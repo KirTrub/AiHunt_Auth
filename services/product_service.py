@@ -3,7 +3,7 @@ from typing import List
 from exceptions.exceptions import NotFoundException
 from models.product import Product
 from repos.product_repo import IProductRepository
-from dto.Product import ProductCreate, ProductUpdate
+from dto.product import ProductCreate, ProductUpdate
 
 class IProductService(ABC):
     @abstractmethod

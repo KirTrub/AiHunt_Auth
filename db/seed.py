@@ -1,8 +1,8 @@
 import asyncio
 from sqlalchemy import select, text
 from db.session import async_session
-from models.permissions import Permission
-from models.resources import Resource
+from models.permission import Permission
+from models.resource import Resource
 from models.role import Role
 from models.user import User
 from models.product import Product

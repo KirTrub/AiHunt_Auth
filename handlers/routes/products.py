@@ -2,7 +2,7 @@ import http
 from typing import List
 from fastapi import APIRouter, Depends
 
-from dto.Product import ProductCreate, ProductResponse, ProductUpdate
+from dto.product import ProductCreate, ProductResponse, ProductUpdate
 from exceptions.exceptions import NotFoundException
 from handlers.deps import Checker, get_product_service
 from models.product import Product

@@ -3,7 +3,7 @@ from typing import List
 from exceptions.exceptions import NotFoundException
 from models.article import Article
 from repos.article_repo import IArticleRepository
-from dto.Article import ArticleCreate, ArticleUpdate
+from dto.article import ArticleCreate, ArticleUpdate
 
 class IArticleService(ABC):
     @abstractmethod

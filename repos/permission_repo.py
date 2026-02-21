@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 from typing import List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from models.permissions import Permission
-from dto.Permission import PermissionCreate, PermissionUpdate
-from models.resources import Resource
+from models.permission import Permission
+from dto.permission import PermissionCreate, PermissionUpdate
+from models.resource import Resource
 
 class IPermissionRepository(ABC):
     @abstractmethod

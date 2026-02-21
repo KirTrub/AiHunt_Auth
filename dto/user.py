@@ -15,6 +15,7 @@ class UserUpdate(BaseModel):
     last_name: Optional[str] = None
     patronymic: Optional[str] = None
     email: Optional[EmailStr] = None
+    role_id: Optional[int] = None
     is_active: Optional[bool] = None
 
 class UserResponse(BaseModel):

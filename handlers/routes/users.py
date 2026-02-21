@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends
 
 
-from dto.User import UserCreate, UserResponse, UserUpdate
+from dto.user import UserCreate, UserResponse, UserUpdate
 from exceptions.exceptions import NotFoundException
 from handlers.deps import Checker, get_user_service
 from models.user import User
@@ -28,11 +28,6 @@ async def get_user_by_id(user_id: int,
         raise NotFoundException()
     
     return db_user
-
-@users_router.post("", status_code=http.HTTPStatus.CREATED)
-async def create_user(data: UserCreate, user_service: IUserService = Depends(get_user_service)):
-    new_user_id = await user_service.create(data)
-    return new_user_id
     
 @users_router.patch("/{user_id}", status_code=http.HTTPStatus.OK, response_model=UserResponse)
 async def update_user(user_id: int,
